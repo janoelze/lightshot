@@ -7,6 +7,8 @@ from lightshot.S3 import S3
 from lightshot.screenshot import Screenshot
 from lightshot.LoggerFactory import LoggerFactory
 
+import argparse
+import os
 
 debug = True
 
@@ -14,6 +16,12 @@ app = Flask(__name__)
 app.config.from_envvar('LIGHTSHOT_SETTINGS')
 logger = LoggerFactory(app.config['LS_LOG_PATH'])
 app.logger.addHandler(logger.create_rotating_file_handler())
+
+_basedir = os.path.abspath(os.path.dirname(__file__))
+parser = argparse.ArgumentParser(description='run the app')
+parser.add_argument('--port', type=int, default=5000)
+parser.add_argument('--host', type=str, default='127.0.0.1')
+args = parser.parse_args()
 
 @app.route("/generate")
 def generate():
@@ -47,7 +55,7 @@ def generate():
 
 if __name__ == "__main__":
     app.run(
-        host="0.0.0.0",
-        port=80,
+        host=args.host,
+        port=args.port,
         debug=debug
     )
